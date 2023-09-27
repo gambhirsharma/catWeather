@@ -1,14 +1,14 @@
 {
   "name": "weather-cli.ts",
-  "module": "index.ts",
+  "module": "src/index.ts",
   "type": "module",
   "devDependencies": {
     "@types/figlet": "^1.5.6",
     "bun-types": "latest"
   },
   "scripts": {
-    "start": "bun run index.ts",
-    "dev": "bun --watch run index.ts"
+    "start": "bun run src/index.ts",
+    "dev": "bun --watch run src/index.ts"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
