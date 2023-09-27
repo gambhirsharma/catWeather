@@ -1,11 +1,13 @@
 import { program } from "commander";
-import convertUnixTimestampTo24Hour from "../libs/timeConvert";
-import convertTimezoneToUTC from "../libs/timeZoneConverter";
-import roundoffTemp from "../libs/roundoffTemp";
-// import { blessed } from "blessed";
+// blessed doesn't support ES6 import/export module :(
 const blessed = require("blessed");
 
 import { ICON } from "./asciiART.ts";
+import {
+  convertUnixTimestampTo24Hour,
+  convertTimezoneToUTC,
+  roundoffTemp,
+} from "../libs/converter.ts";
 
 const lat = 27.3549;
 const lon = 95.315201;
