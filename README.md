@@ -1,4 +1,4 @@
-# weather-cli.ts
+# catWeather
 
 To install dependencies:
 
