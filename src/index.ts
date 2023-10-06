@@ -1,6 +1,8 @@
 // blessed doesn't support ES6 import/export module :(
 const blessed = require("blessed");
-import { program } from "commander";
+import { Command } from "commander";
+import chalk from "chalk";
+
 import { ICON } from "./asciiART.ts";
 import {
   convertUnixTimestampTo24Hour,
@@ -8,22 +10,22 @@ import {
   roundoffTemp,
 } from "../libs/converter.ts";
 
-const lat = 27.3549;
-const lon = 95.315201;
-
 async function getWeather() {
   try {
     const response = await fetch(
-      `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${Bun.env.API_KEY}&units=metric`
+      `https://api.openweathermap.org/data/2.5/weather?lat=${Bun.env.LAT}&lon=${Bun.env.LON}&appid=${Bun.env.API_KEY}&units=metric`
     );
-    return response.json();
+    return await response.json();
   } catch (e) {
     return console.log(`Error in getWeather: ${e}`);
   }
 }
-export let res = await getWeather();
 
-const { main, description } = res.weather[0];
+let res = await getWeather();
+
+// getWeather().catch((e)=> {console.log(`error: ${e}`)})
+
+const { main, description, icon } = res.weather[0];
 const {
   temp,
   feels_like,
@@ -38,13 +40,8 @@ const { country, sunrise, sunset } = res.sys;
 const { speed } = res.wind;
 const { timezone, name } = res;
 
-// program
-//  .name("Weather CLI")
-//  .description("CLI base weather app.")
-//  .version('0.0.1')
-
-// program.action
-// console.log(`${placeName}, ${countryName}`)
+// The terminal Code
+const program = new Command();
 
 const screen = blessed.screen({
   smartCSR: true,
@@ -96,7 +93,7 @@ const upperLeftText = blessed.text({
   left: 1,
   width: "90%-4",
   height: "100%",
-  content: `${ICON["10d"].icon}`,
+  content: `${ICON[icon].icon}`,
 });
 
 const upperRightText = blessed.text({
