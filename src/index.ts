@@ -1,7 +1,6 @@
-import { program } from "commander";
 // blessed doesn't support ES6 import/export module :(
 const blessed = require("blessed");
-
+import { program } from "commander";
 import { ICON } from "./asciiART.ts";
 import {
   convertUnixTimestampTo24Hour,
@@ -12,37 +11,32 @@ import {
 const lat = 27.3549;
 const lon = 95.315201;
 
-const response = await fetch(
-  `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${Bun.env.API_KEY}&units=metric`
-);
+async function getWeather() {
+  try {
+    const response = await fetch(
+      `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${Bun.env.API_KEY}&units=metric`
+    );
+    return response.json();
+  } catch (e) {
+    return console.log(`Error in getWeather: ${e}`);
+  }
+}
+export let res = await getWeather();
 
-const res = await response.json();
-
-// right-top
-const weatherMain = res.weather[0].main;
-const weatherDesc = res.weather[0].description;
-const temp = roundoffTemp(res.main.temp);
-
-const windSpeed = res.wind.speed;
-
-const placeName = res.name;
-const countryName = res.sys.country;
-
-// left-bottom
-const feelLike = roundoffTemp(res.main.feels_like);
-const humidity = res.main.humidity;
-const airPressure = res.main.pressure;
-const minTemp = roundoffTemp(res.main.temp_min);
-const maxTemp = roundoffTemp(res.main.temp_max);
-
-// right-bottom
-const timeZone = convertTimezoneToUTC(res.timezone);
-const sunRise = convertUnixTimestampTo24Hour(res.sys.sunrise);
-const sunSet = convertUnixTimestampTo24Hour(res.sys.sunset);
-const seaLevel = res.main.sea_level;
-const groundLevel = res.main.grnd_level;
-
-// console.log(countryName);
+const { main, description } = res.weather[0];
+const {
+  temp,
+  feels_like,
+  humidity,
+  pressure,
+  temp_min,
+  temp_max,
+  sea_level,
+  grnd_level,
+} = res.main;
+const { country, sunrise, sunset } = res.sys;
+const { speed } = res.wind;
+const { timezone, name } = res;
 
 // program
 //  .name("Weather CLI")
@@ -111,7 +105,9 @@ const upperRightText = blessed.text({
   left: 1,
   width: "100%-4",
   height: "100%-2",
-  content: `${weatherMain}, ${weatherDesc}\n${temp} °C\n${windSpeed} m/s \nAir Quality Index: ${seaLevel}`,
+  content: `${main}, ${description}\n${roundoffTemp(
+    temp
+  )} °C\n${speed} m/s \nAir Quality Index: ${sea_level}`,
 });
 
 // Create two horizontal split windows below the upper horizontal split window
@@ -146,7 +142,11 @@ const lowerLeftText = blessed.text({
   left: 1,
   width: "100%-4",
   height: "100%",
-  content: `Feels like: ${feelLike} °C \nHumidity: ${humidity}% \nAir Pressure: ${airPressure} hPa \nMin Temp: ${minTemp} °C\nMax Temp: ${maxTemp} °C`,
+  content: `Feels like: ${roundoffTemp(
+    feels_like
+  )} °C \nHumidity: ${humidity}% \nAir Pressure: ${pressure} hPa \nMin Temp: ${roundoffTemp(
+    temp_min
+  )} °C\nMax Temp: ${roundoffTemp(temp_max)} °C`,
 });
 
 const lowerRightText = blessed.text({
@@ -155,7 +155,11 @@ const lowerRightText = blessed.text({
   left: 1,
   width: "100%-4",
   height: "100%",
-  content: `TimeZone: ${timeZone} \nSun rise: ${sunRise} \nSun set: ${sunSet} \n${placeName}, ${countryName}`,
+  content: `TimeZone: ${convertTimezoneToUTC(
+    timezone
+  )} \nSun rise: ${convertUnixTimestampTo24Hour(
+    sunrise
+  )} \nSun set: ${convertUnixTimestampTo24Hour(sunset)} \n${name}, ${country}`,
 });
 
 // Handling keypress to exit the program
