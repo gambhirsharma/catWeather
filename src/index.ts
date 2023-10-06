@@ -1,6 +1,8 @@
 // blessed doesn't support ES6 import/export module :(
 const blessed = require("blessed");
-import { program } from "commander";
+import { Command } from "commander";
+import chalk from 'chalk';
+
 import { ICON } from "./asciiART.ts";
 import {
   convertUnixTimestampTo24Hour,
@@ -16,14 +18,14 @@ async function getWeather() {
     const response = await fetch(
       `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${Bun.env.API_KEY}&units=metric`
     );
-    return response.json();
+    return await response.json();
   } catch (e) {
     return console.log(`Error in getWeather: ${e}`);
   }
 }
-export let res = await getWeather();
+let res = await getWeather();
 
-const { main, description } = res.weather[0];
+const { main, description,icon } = res.weather[0];
 const {
   temp,
   feels_like,
@@ -96,7 +98,7 @@ const upperLeftText = blessed.text({
   left: 1,
   width: "90%-4",
   height: "100%",
-  content: `${ICON["10d"].icon}`,
+  content: `${ICON[icon].icon}`,
 });
 
 const upperRightText = blessed.text({
