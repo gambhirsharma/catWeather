@@ -1,5 +1,7 @@
 # weather-cli.ts
 
+A CLI base CLI application. 
+
 To install dependencies:
 
 ```bash
