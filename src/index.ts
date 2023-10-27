@@ -25,20 +25,23 @@ let res = await getWeather();
 
 // getWeather().catch((e)=> {console.log(`error: ${e}`)})
 
-const { main, description, icon } = res.weather[0];
 const {
-  temp,
-  feels_like,
-  humidity,
-  pressure,
-  temp_min,
-  temp_max,
-  sea_level,
-  grnd_level,
-} = res.main;
-const { country, sunrise, sunset } = res.sys;
-const { speed } = res.wind;
-const { timezone, name } = res;
+  weather: [{ main, description, icon }],
+  main: {
+    temp,
+    feels_like,
+    humidity,
+    pressure,
+    temp_min,
+    temp_max,
+    sea_level,
+    grnd_level,
+  },
+  sys: { country, sunrise, sunset },
+  wind: { speed },
+  timezone,
+  name,
+} = res;
 
 // The terminal Code
 const program = new Command();

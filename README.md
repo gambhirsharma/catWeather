@@ -1,5 +1,7 @@
 # catWeather
 
+A CLI base CLI application. 
+
 To install dependencies:
 
 ```bash
